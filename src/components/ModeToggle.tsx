@@ -1,0 +1,37 @@
+import { SunIcon, MoonIcon } from "@radix-ui/react-icons";
+import { Button } from "./ui/button";
+import { useTheme } from "./ThemeProvider";
+
+export function ModeToggle() {
+    const { theme, setTheme } = useTheme();
+
+    const toggleTheme = () => {
+        if (theme === "light") {
+            setTheme("dark");
+        } else if (theme === "dark") {
+            setTheme("system");
+        } else {
+            setTheme("light");
+        }
+    };
+
+    return (
+        <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
+            className="p-2 relative flex items-center justify-center"
+            title={
+                theme === "light"
+                    ? "Switch to Dark Mode"
+                    : theme === "dark"
+                        ? "Switch to System Theme"
+                        : "Switch to Light Mode"
+            }
+        >
+            <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+        </Button>
+    );
+}
