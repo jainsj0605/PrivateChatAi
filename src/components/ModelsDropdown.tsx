@@ -8,11 +8,7 @@ import {
 } from "./ui/select";
 import useChatStore from "../hooks/useChatStore";
 
-function ModelsDropdown({
-  resetEngineAndChatHistory,
-}: {
-  resetEngineAndChatHistory: () => void;
-}) {
+function ModelsDropdown() {
   const selectedModel = useChatStore((state) => state.selectedModel);
   const setSelectedModel = useChatStore((state) => state.setSelectedModel);
   const availableModels = useChatStore((state) => state.availableModels);
@@ -21,9 +17,9 @@ function ModelsDropdown({
     <div className="p-2 text-xs text-center font-bold">
       <Select
         value={selectedModel}
-        onValueChange={(selectedModel) => {
-          setSelectedModel(selectedModel);
-          resetEngineAndChatHistory();
+        onValueChange={(model) => {
+          // setSelectedModel handles session switching internally
+          setSelectedModel(model);
         }}
       >
         <SelectTrigger className="w-[200px]">

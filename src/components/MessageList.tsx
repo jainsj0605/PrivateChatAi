@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import useChatStore from "../hooks/useChatStore";
+import useChatStore, { selectChatHistory } from "../hooks/useChatStore";
 import Message from "./Message";
 
 function MessageList() {
-  const chatHistory = useChatStore((state) => state.chatHistory);
+  const chatHistory = useChatStore(selectChatHistory);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
 
