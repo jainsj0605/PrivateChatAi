@@ -37,6 +37,7 @@ function App() {
   const setAvailableModels = useChatStore((state) => state.setAvailableModels);
   const setSelectedModel = useChatStore((state) => state.setSelectedModel);
   const activeSessionId = useChatStore((state) => state.activeSessionId);
+  const createSession = useChatStore((state) => state.createSession);
   const pendingImages = useChatStore((state) => state.pendingImages);
   const setPendingImages = useChatStore((state) => state.setPendingImages);
 
@@ -71,6 +72,13 @@ function App() {
 
   // Flush streamed buffer to state on each animation frame
   const flushBuffer = useCallback(() => {
+    // If the generation was aborted (e.g. user switched session or clicked stop),
+    // do not flush the buffer into the new session's state.
+    if (abortControllerRef.current?.signal.aborted) {
+      rafRef.current = null;
+      return;
+    }
+
     setChatHistory((history) => [
       ...history.slice(0, -1),
       { role: "assistant" as const, content: streamBufferRef.current },
@@ -178,8 +186,8 @@ function App() {
       const err = e as { name?: string; message?: string };
       if (err.name === "AbortError") {
         console.log("Generation interrupted");
-        // Flush whatever we have
-        flushBuffer();
+        // Do NOT flush the buffer here — if the user switched sessions,
+        // we don't want the old aborted text bleeding into the new session.
       } else {
         console.error("EXCEPTION", e);
         setChatHistory((history) => [
@@ -248,7 +256,7 @@ function App() {
         </Button>
 
         <div className="flex gap-2">
-          <ResetChatButton resetChat={resetChat} />
+          <ResetChatButton resetChat={() => createSession(selectedModel)} />
           <ClearChatButton clearChat={resetChat} />
         </div>
         <DebugUI progress={progress} />
